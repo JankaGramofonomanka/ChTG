@@ -198,6 +198,14 @@ class Graph():
 
 		return func
 	
+	def get_neighbors_colors(self, v):
+		colors = []
+		for w in self.get_neighbors(v):
+			i = self.vertices.index(w)
+			if self.colors[i] is not None:
+				colors.append(self.colors[i])
+
+		return list(set(colors))
 
 
 	def d_satur(self):
@@ -221,39 +229,31 @@ class Graph():
 
 		while graph.ver_len() > 0:
 
-			"""Szukaj takiego wierzcholka ze liczba jego pokolorowanych 
+			"""Szukaj takiego wierzcholka ze liczba kolorów jego pokolorowanych 
 			sasiadow jest najwieksza"""
+			#"""
 			try:
 				w = neighbors[0]
-
+				neighbors_colors = self.get_neighbors_colors(w)
 				
-				colored_neighbors = self.\
-					get_neighbors(w, self.is_colored_func())
-				max_colored_neghbors = len(colored_neighbors)
+				max_colors = len(neighbors_colors)
 				
 				for vertex in neighbors:
 
-					num_colored_neighbors = len(self.\
-						get_neighbors(vertex, self.is_colored_func())
-					)
+					neighbors_colors_vertex = self.get_neighbors_colors(vertex)
 
-					if num_colored_neighbors > max_colored_neghbors:
+					num_colors = len(neighbors_colors_vertex)
+
+					if num_colors > max_colors:
 						w = vertex
-						max_colored_neghbors = num_colored_neighbors
+						max_colors = num_colors
+
 
 			except IndexError:
 				w = graph[0]
 
-
 			#i pokoloruj go na najmniejszy dostepny kolor
-			colored_neighbors = self.\
-				get_neighbors(w, self.is_colored_func())
-
-			neighbors_colors = []
-			for vertex in colored_neighbors:
-				i = self.vertices.index(vertex)
-				neighbors_colors.append(self.colors[i])
-
+			neighbors_colors = self.get_neighbors_colors(w)
 
 			w_color = 0
 			while w_color in neighbors_colors:
@@ -281,7 +281,6 @@ class Graph():
 
 
 
-	#jarek----------------------------------------------------------
 	def independent(self):
 		
 		if self.ver_len() == 0:
@@ -319,7 +318,7 @@ class Graph():
 		return elapsed
 
 
-	#---------------------------------------------------------------
+
 
 
 class SpecialGraph(Graph):
@@ -456,7 +455,7 @@ class SpecialGraph(Graph):
 		return elapsed
 
 
-	#jarek----------------------------------------------------------
+
 
 	def independent_2(self):
 		if self.ver_len() == 0:
@@ -497,4 +496,3 @@ class SpecialGraph(Graph):
 		return elapsed
 
 
-	#---------------------------------------------------------------
