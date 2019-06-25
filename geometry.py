@@ -3,6 +3,7 @@ from math import sqrt
 from misc import iterable
 
 class Circle():
+	"""A class to represent an open circle"""
 
 	def __init__(self, center, radius):
 		
@@ -23,6 +24,7 @@ class Circle():
 		return dist(point, self.center) < self.radius
 
 class ClosedCircle(Circle):
+	"""A class to represent a closed circle"""
 
 	def __init__(self, center, radius):
 		Circle.__init__(self, center, radius)
@@ -32,6 +34,7 @@ class ClosedCircle(Circle):
 
 
 class Vector():
+	"""A class to represent a vector"""
 	
 	def __init__(self, coords):
 		
@@ -67,7 +70,7 @@ class Vector():
 			raise ValueError		
 
 	def __mul__(self, w):
-		"""This is a dot product"""
+		"""Returns a dot product"""
 
 		if iterable(w) and len(self) == len(w):
 			result = 0
@@ -79,26 +82,33 @@ class Vector():
 			return Vector([c*coord for coord in self.coords])
 
 	def __rmul__(self, c):
+		"""Represents a scalar multiplication"""
+
 		if iterable(c):
 			return self*c
 		else:
 			return Vector([c*coord for coord in self.coords])
 
 	def __len__(self):
+		"""Returns number of coordinates"""
 		return len(self.coords)
 
 	def __getitem__(self, n):
+		"""Returns n-th coordinate"""
 		return self.coords[n]
 
 	def __str__(self):
 		return str(self.coords)
 
 	def norm(self):
+		"""Returns the length of a vector"""
 		return sqrt(self*self)
 
 
 
 def dist(v, w):
+	"""Returns the distance between 'v' and 'w'"""
+
 	if not iterable(v) or not iterable(w) or len(v) != len(w):
 		raise TypeError('Vectors must be iterable, of length 2')
 	
@@ -106,12 +116,18 @@ def dist(v, w):
 	return u.norm()
 
 def left_perpendicular(vector):
+	"""Returns a vector perpendicular to and pointing to the left of a given 
+	vector"""
+
 	if not iterable(vector) or len(vector) != 2:
 		raise TypeError("Argument 'vector' must be iterable, of length 2")
 
 	return Vector((-vector[1], vector[0]))
 
 def right_perpendicular(vector):
+	"""Returns a vector perpendicular to and pointing to the right of a given 
+	vector"""
+
 	if not iterable(vector) or len(vector) != 2:
 		raise TypeError("Argument 'vector' must be iterable, of length 2")
 
@@ -119,6 +135,11 @@ def right_perpendicular(vector):
 
 
 def find_circles(v, w, radius, type='open'):
+	"""Returns a tuple containing two circles of given radius, such that 'v' 
+	and 'w' are contained in their edges
+
+	The circles are closed if argument 'type' equals to '"closed"', open if it 
+	eqals to '"open"'"""
 
 	if not iterable(v) or not iterable(w) or len(v) != len(w):
 		raise TypeError('Vectors must be iterable, of length 2')
@@ -136,26 +157,23 @@ def find_circles(v, w, radius, type='open'):
 	if distance > 2*radius:
 		return None
 
+	#The following works because of the Pythagorean theorem
 	pointer = (1 / 2)*(Vector(w) - Vector(v))
 	
 	d = pointer.norm()
 	h = sqrt(abs(radius**2 - (d**2)))
 
+	#Theese are centers of returned circles
+	center_left = Vector(v) + pointer + (h / d)*left_perpendicular(pointer)
+	center_right = Vector(v) + pointer + (h / d)*right_perpendicular(pointer)
+
 	if type == 'open':
-		res_left = Circle(
-			Vector(v) + pointer + (h / d)*left_perpendicular(pointer), radius
-		)
-		res_right = Circle(
-			Vector(v) + pointer + (h / d)*right_perpendicular(pointer), radius
-		)
+		res_left = Circle(center_left, radius)
+		res_right = Circle(center_right, radius)
 	
 	elif type == 'closed':
-		res_left = ClosedCircle(
-			Vector(v) + pointer + (h / d)*left_perpendicular(pointer), radius
-		)
-		res_right = ClosedCircle(
-			Vector(v) + pointer + (h / d)*right_perpendicular(pointer), radius
-		)
+		res_left = ClosedCircle(center_left, radius)
+		res_right = ClosedCircle(center_right, radius)
 
 	return (res_left, res_right)
 

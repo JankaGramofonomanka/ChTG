@@ -1,6 +1,7 @@
 from math import isnan
 
 def iterable(it, exception=None):
+	"""Returns 'True' if 'it' is iterable, 'False' otherwise"""
 	
 	try:
 		iter(it)
@@ -13,7 +14,10 @@ def iterable(it, exception=None):
 			raise exception
 
 def between(lower, var, upper):
+	"""Returns 'True' if 'var' is between 'lower' and 'upper', 'False' 
+	otherwise"""
 	return lower < var and var < upper
 
 def always_true(var):
+	"""Returns 'True'"""
 	return True
